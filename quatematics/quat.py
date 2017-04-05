@@ -43,19 +43,25 @@ class Quat(object):
     def fromAngleAxis(cls,angle,axis):
         """
         Get a quaternion which is a rotation about an arbitray axis.
-
         """
         from axis_angle import AxisAngle
         return AxisAngle(angle,axis).asQuat()
 
     @classmethod
     def rand(cls):
+        """
+        Create a random unit quaternion.
+        """
         q_vec = np.random.rand(4)
         q=Quat(q_vec)
         q.normalize()
         return q
     @classmethod
     def fromDCM(cls,C):
+        """
+        Use Sheppard's algorithm to convert from direction cosine matrix to
+        quaternion. See Hurtado, J.E., Kinematic and Kinetic Principles.
+        """
         gamma=np.trace(C)
         w2=(1+gamma)/4.
         Ckk=np.diag(C)
@@ -119,20 +125,31 @@ class Quat(object):
         return self._data[0:3]
 
     def inverse(self):
+        """
+        Quaternion inverse; see Trawny eq. 13.
+        """
         q_vector = np.zeros(4)
         q_vector[:3] = self.imaginary*-1
         q_vector[3] = self.w
         return Quat(q_vector,"xyzw")
 
     def normalize(self):
+        """
+        Normalize the quaternion to make a unit quaternion.
+        """
         self._data /= self.norm()
 
     def norm(self):
+        """
+        The norm of the elements of the quaternion. Should be 1 for a unit
+        quaternion.
+        """
         return np.sqrt(np.dot(self._data, self._data))
 
     def Xi(self):
         """
-        Matrix that relates angular velocity to quaternion derivative.
+        Matrix that relates angular velocity to quaternion derivative. See
+        Trawny eq. 20.
         """
         q = self.imaginary
         q4=self.w
@@ -145,7 +162,7 @@ class Quat(object):
 
     def Psi(self):
         """
-        Matrix useful for many things...
+        The "Psi" matrix as defined by Trawny eq. 19.
         """
         q4=self.w
         q=self.imaginary
@@ -157,7 +174,7 @@ class Quat(object):
 
     def asDCM(self):
         """
-        Direction cosine matrix composed of this quaternion.
+        Direction cosine matrix composed of this quaternion. See Trawny eq. 79.
         """
         return np.dot(self.Xi().T,self.Psi())
 
@@ -169,7 +186,9 @@ class Quat(object):
 
     def asColVector(self,order="xyzw"):
         """
-        Column vector representaiton of quaternion.
+        Column vector representaiton of quaternion. Optional `order` parameter
+        defines whether the scalar component is the first or last element of
+        the vector.
         """
         if order == "xyzw":
             return col_vector(self._data)
@@ -179,22 +198,10 @@ class Quat(object):
             wxyz_array[1:4] = self._data[0:3]
             return col_vector(wxyz_array)
 
-    # def asAxisAngle(self):
-    #
-    #     self.normalize()
-    #     angle = 2*np.arccos(self.w)
-    #     if self.w == 1.:
-    #         axis = np.array([1, 1, 1])
-    #     else:
-    #         axis = self.imaginary / np.sqrt(1-self.w**2)
-    #
-    #     axis = axis / np.sqrt(np.dot(axis, axis))
-    #
-    #     return AxisAngle(angle,axis)
 
     def __mul__(self, quat2):
         """
-        Define quaternion multiplication.
+        Define quaternion multiplication. See Trawny eq. 10.
         """
         p4=quat2.w
         p = quat2.imaginary
@@ -209,22 +216,21 @@ class Quat(object):
 
 
     def __repr__(self):
+        """
+        String representation of Quat.
+        """
         str_repr = "[x y z w]=" + str(self._data)
         return str_repr
 
-#iden = Quat.eye
-
-#myquat1 = Quat([1,0,0,0])
-#Quat.fromDCM(myquat1.asDCM())
-## myquat = Quat([])
-#c=1/np.sqrt(2)
-#myquat2 = Quat([0,c,0,c])
-#mult= myquat1*myquat2
-#print myquat2.DCM()
-
-#for i in xrange(20):
-#    q=Quat.rand()
-#    C=q.asDCM()
-#    q2=Quat.fromDCM(C)
-#
-#    print q*q2.inverse()
+        # def asAxisAngle(self):
+        #
+        #     self.normalize()
+        #     angle = 2*np.arccos(self.w)
+        #     if self.w == 1.:
+        #         axis = np.array([1, 1, 1])
+        #     else:
+        #         axis = self.imaginary / np.sqrt(1-self.w**2)
+        #
+        #     axis = axis / np.sqrt(np.dot(axis, axis))
+        #
+        #     return AxisAngle(angle,axis)

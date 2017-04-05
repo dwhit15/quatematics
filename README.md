@@ -15,7 +15,18 @@ Most operations and method names are defined according to the following paper:
 
 ## Installation
 
-Assuming the
+The only dependency is numpy. Install numpy using your favorite method (e.g. pip, apt-get).
+
+Clone this repository to a location of your choice.
+Add quatematics to the PYTHONPATH by running setup.sh.
+
+For example:
+
+```bash
+git clone https://github.com/dwhit15/quatematics
+cd quatematics
+sh setup.sh
+```
 
 ## Status
 
@@ -28,6 +39,8 @@ Performance on other platforms is unknown.
 
 ```python
 
+import numpy as np
+
 # import the library
 from quatematics import Quat
 
@@ -39,7 +52,7 @@ identity_quat = Quat(np.array([0, 0, 0, 1]) )
 # or
 identity_quat = Quat([1, 0, 0, 0], order="wxyz")
 # or
-identity_quat = Quat.eye()
+identity_quat = Quat.eye
 
 # create a random quaternion
 rand_quat = Quat.rand()
@@ -119,10 +132,11 @@ mult = np.dot(w,w.T)
 q = Quat.rand()
 
 # the time rate of change of the quaternion is...
-# see Trawny 106
-q_dot = np.dot(q.Xi,w)
+# see Trawny eq. 106
+q_dot = np.dot(q.Xi(),w)
 
 # ...it's also
-q_dot = np.dot(w.Omega,q)
+# see Trawny eq. 107
+q_dot = np.dot(w.Omega(),q.asColVector())
 
 ```
