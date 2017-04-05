@@ -4,9 +4,16 @@ from matrix_ops import skew_symmetric, col_vector
 from axis_angle import AxisAngle
 
 
-# no idea how this works, got from stack overflow
 class classproperty(property):
     def __get__(self, cls, owner):
+        """
+        Normally properties can only be applied to an instance of a class.
+        This custom decorator allows the use of "class properties".
+
+        Credit goes to a stack overflow user for the implementation. The
+        original developer of this library is not exactly sure how or why this
+        implementation works.
+        """
         return classmethod(self.fget).__get__(None, owner)()
 
 
