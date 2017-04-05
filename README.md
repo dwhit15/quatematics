@@ -33,6 +33,8 @@ sh setup.sh
 This library has been used extensively on Ubuntu 14.04 with Python 2.7.
 Performance on other platforms is unknown.
 
+Feel free to use or contribute to this library in any way. 
+
 ## Usage
 
 ### Quaternion Creation and Manipulation
